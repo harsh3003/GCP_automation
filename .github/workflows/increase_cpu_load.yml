@@ -1,0 +1,22 @@
+name: Increase CPU Load on Nodes
+
+on:
+  workflow_dispatch:  # Trigger manually from GitHub Actions tab
+
+jobs:
+  run-playbook:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.MASTER_VM_IP }} >> ~/.ssh/known_hosts
+
+      - name: Run Ansible Playbook on VM
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+              ${{ secrets.MASTER_VM_USER }}@${{ secrets.MASTER_VM_IP }} \
+              "cd ${{ secrets.ANSIBLE_DIR }} && ansible-playbook -i hosts.ini increase_load.yml"
