@@ -1,0 +1,22 @@
+name: Test SSH to GCP Master
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-ssh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.MASTER_VM_IP }} >> ~/.ssh/known_hosts
+
+      - name: Try SSH to master VM
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+              ${{ secrets.MASTER_VM_USER }}@${{ secrets.MASTER_VM_IP }} \
+              "echo '✅ Connected to Master VM successfully from GitHub Actions!' && hostname && whoami"
