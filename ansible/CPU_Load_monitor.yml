@@ -1,0 +1,12 @@
+---
+- name: Simple CPU Load Monitor
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Get current 1-minute CPU load average
+      shell: awk '{print $1}' /proc/loadavg
+      register: cpu_load
+
+    - name: Show CPU load
+      debug:
+        msg: "Current 1-minute CPU load: {{ cpu_load.stdout }}"
