@@ -1,4 +1,4 @@
-name: Run Ansible Playbook on GCP Master VM
+name: Monitor CPU Load on VM Nodes
 
 on:
   workflow_dispatch:  # Trigger manually from GitHub Actions tab
