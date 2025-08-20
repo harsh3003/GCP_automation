@@ -15,6 +15,12 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.MASTER_VM_IP }} >> ~/.ssh/known_hosts
 
+      - name: Run Ansible Playbook to Increase Load
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+              ${{ secrets.MASTER_VM_USER }}@${{ secrets.MASTER_VM_IP }} \
+              "cd ${{ secrets.ANSIBLE_DIR }} && ansible-playbook -i hosts.ini increase_load.yml"
+
       - name: Run Ansible Playbook on VM
         run: |
           ssh -o StrictHostKeyChecking=no \
