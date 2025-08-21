@@ -1,5 +1,5 @@
 ---
-name: Run Ansible Playbook on Master VM
+name: Server_health_check
 
 on:
   workflow_dispatch:   # run manually
