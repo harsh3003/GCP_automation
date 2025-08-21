@@ -1,0 +1,18 @@
+name: Server Check
+
+on:
+  workflow_dispatch:   # run manually from Actions tab
+
+jobs:
+  run-ansible-playbook:
+    runs-on: ubuntu-latest   # shared runner
+
+    steps:
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Run System Check Playbook
+        run: |
+          ansible-playbook -i inventory.ini system_check.yml
