@@ -1,18 +1,21 @@
-name: Server Check
+name: Run Ansible Playbook on Master VM
 
 on:
-  workflow_dispatch:   # run manually from Actions tab
+  workflow_dispatch:   # run manually
 
 jobs:
-  run-ansible-playbook:
+  run-playbook:
     runs-on: ubuntu-latest   # shared runner
 
     steps:
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Run System Check Playbook
+      - name: Setup SSH key
         run: |
-          ansible-playbook -i inventory.ini system_check.yml
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.MASTER_VM_IP }} >> ~/.ssh/known_hosts
+
+      - name: Run Ansible Playbook on Master VM
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.MASTER_VM_USER }}@${{ secrets.MASTER_VM_IP }} \
+          "cd ${{ secrets.ANSIBLE_DIR }} && ansible-playbook -i hosts.ini system_check.yml --extra-vars 'ansible_become_pass=${{ secrets.SUDO_PASS }}'"
